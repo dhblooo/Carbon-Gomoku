@@ -228,6 +228,20 @@ static void do_command()
 		}
 		turn();
 	}
+	else if ((param = get_cmd_param("yxboard", cmd)) != 0) {
+		start();
+		for (;;) { /* fill the whole board */
+			get_line();
+			parse_3int_chk(cmd, &x, &y, &who);
+			if (who == 1) brain_my(x, y);
+			else if (who == 2) brain_opponents(x, y);
+			else if (who == 3) brain_block(x, y);
+			else {
+				if (_stricmp(cmd, "done")) pipeOut("ERROR x,y,who or DONE expected after BOARD");
+				break;
+			}
+		}
+	}
 	else if((param=get_cmd_param("takeback", cmd))!=0) {
 		start();
 		t="ERROR bad coordinates";
@@ -237,6 +251,9 @@ static void do_command()
 			else if(e==1) t="UNKNOWN";
 		}
 		pipeOut(t);
+	}
+	else if ((param = get_cmd_param("yxstop", cmd)) != 0) {
+		terminateAI = true;
 	}
 	else{
 		pipeOut("UNKNOWN command");
